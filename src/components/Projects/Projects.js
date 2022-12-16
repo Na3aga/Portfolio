@@ -38,13 +38,12 @@ function Projects() {
             />
           </Col>
         </Row>
-      </Container>
-      <h1 className="project-heading">
+        <h1 className="project-heading">
           Professional <strong className="purple">Skillset </strong>
         </h1>
-
-      <Techstack />
-      <Github />
+        <Techstack/>
+        <Github/>
+      </Container>
     </Container>
   );
 }

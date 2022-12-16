@@ -445,6 +445,7 @@ button:focus {
 /* Projects */
 /* --------- */
 .project-section {
+  color: white !important;
   position: relative !important;
   padding-top: 150px !important;
   padding-bottom: 30px !important;
