@@ -1,6 +1,6 @@
 <h2 align="center">
   Portfolio Website - v2.0<br/>
-  <a href="http://soumya-jit.tech/" target="_blank">soumyajit.tech</a>
+  <a href="http://na3aga.com/" target="_blank">na3aga.com</a>
 </h2>
 <div align="center">
   <img alt="Demo" src="./Images/readme-img1.png" />
@@ -20,18 +20,22 @@
 
 <h3 align="center">
     🔹
-    <a href="https://github.com/soumyajit4419/Portfolio/issues">Report Bug</a> &nbsp; &nbsp;
+    <a href="https://github.com/na3aga/Portfolio/issues">Report Bug</a> &nbsp; &nbsp;
     🔹
-    <a href="https://github.com/soumyajit4419/Portfolio/issues">Request Feature</a>
+    <a href="https://github.com/na3aga/Portfolio/issues">Request Feature</a>
 </h3>
 
 ## TL;DR
 
-You can fork this repo to modify and make changes of your own. Please give me proper credit by linking back to [Soumyajit4419](https://github.com/soumyajit4419/Portfolio). Thanks!
+Originally forked this project for personal use and I didn't mention the creator just because I am planning to rebuild everything.
+Currently I switched the project from CRA to Vite, also moved to Typescript, and rewritten all personal info. 
+
+But in case you want to support the initial author, I leave this button
+<a href="https://www.buymeacoffee.com/soumyajit4419" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-violet.png" alt="Buy That Guy A Coffee" height= "60px" width= "217px" ></a>
 
 ## Built With
 
-My personal portfolio <a href="http://soumya-jit.tech/" target="_blank">soumyajit.tech</a> which features some of my github projects as well as my resume and technical skills.<br/>
+My personal portfolio <a href="http://na3aga.com/" target="_blank">na3aga.com</a> which features some of my github projects as well as my resume and technical skills.<br/>
 
 This project was built using these technologies.
 
@@ -39,8 +43,9 @@ This project was built using these technologies.
 - Node.js
 - Express.js
 - CSS3
-- VsCode
+- VS Code
 - Vercel
+- Vite
 
 ## Features
 
@@ -56,9 +61,9 @@ Clone down this repository. You will need `node.js` and `git` installed globally
 
 ## 🛠 Installation and Setup Instructions
 
-1. Installation: `npm install`
+1. Installation: `pnpm install`
 
-2. In the project directory, you can run: `npm start`
+2. In the project directory, you can run: `pnpm run dev`
 
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
@@ -68,9 +73,3 @@ The page will reload if you make edits.
 
 Open the project folder and Navigate to `/src/components/`. <br/>
 You will find all the components used and you can edit your information accordingly.
-
-### Show your support
-
-Give a ⭐ if you like this website!
-
-<a href="https://www.buymeacoffee.com/soumyajit4419" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-violet.png" alt="Buy Me A Coffee" height= "60px" width= "217px" ></a>
