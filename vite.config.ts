@@ -1,6 +1,6 @@
 import path from "path";
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react-swc";
+import react from "@vitejs/plugin-react";
 import svgrPlugin from "vite-plugin-svgr";
 import { createHtmlPlugin } from 'vite-plugin-html'
 import checker from 'vite-plugin-checker'
@@ -9,9 +9,11 @@ import checker from 'vite-plugin-checker'
 export default defineConfig(({ mode }) => {
   return {
     plugins: [
-      react({ 
-        plugins: [["@swc/plugin-styled-components", {}]] 
-      }),
+      react({
+        babel: {
+          plugins: [
+            ['babel-plugin-styled-components', { ssr: false, pure: true, displayName: true, fileName: true }]
+      ]}}),
       svgrPlugin({
         svgrOptions: {
           icon: true,
