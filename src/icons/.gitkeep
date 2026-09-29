@@ -1,0 +1,2 @@
+# astro-icon scans this directory for local SVGs.
+# Kept so it does not warn on every build; brand marks come from @iconify-json/simple-icons.

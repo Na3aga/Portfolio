@@ -1,0 +1,95 @@
+---
+import { Icon } from "astro-icon/components";
+import Badge from "./Badge.astro";
+import CopyEmail from "./CopyEmail.astro";
+import { site, socials } from "~/data/site";
+
+const nav = [
+  { label: "About", href: "#about" },
+  { label: "Services", href: "#services" },
+  { label: "Stack", href: "#stack" },
+  { label: "Experience", href: "#experience" },
+  { label: "Work", href: "#work" },
+];
+---
+
+<footer id="contact" class="relative z-10 bg-bg px-4 pb-4 md:px-12 md:pb-12">
+  <div
+    class="panel relative overflow-hidden rounded-none rounded-br-[4rem] px-6 pt-14 pb-8 md:rounded-br-[8rem] md:px-10 md:pt-20"
+    data-scroll-shift="enter"
+    data-shift-from="16"
+    data-shift-to="0"
+  >
+    <!-- Oversized CTA, cropped by the panel like the reference -->
+    <h2 class="display text-mega text-on-accent">
+      <span
+        class="block origin-top-left"
+        data-scroll-scale="enter"
+        data-scale-from="1.4"
+        data-scale-to="1"
+      >
+        Let's talk
+      </span>
+    </h2>
+
+    <div class="mt-12 grid gap-12 md:pr-72">
+      <div>
+        <p class="max-w-md text-[17px] leading-relaxed text-on-accent/80">
+          Open to contract and full-time Web3 engineering work — smart contracts, indexers
+          and the products around them.
+        </p>
+
+        <div class="mt-8">
+          <CopyEmail
+            class="display text-[clamp(1.5rem,3.5vw,2.75rem)] text-on-accent hover:underline"
+            size={20}
+          />
+        </div>
+
+        <ul class="mt-10 flex flex-wrap gap-x-6 gap-y-3">
+          {
+            socials
+              .filter((s) => s.label !== "Email")
+              .map((social) => (
+                <li>
+                  <a
+                    href={social.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    class="inline-flex items-center gap-2 text-[15px] font-medium text-on-accent/80 transition-colors hover:text-on-accent"
+                  >
+                    <Icon name={`simple-icons:${social.icon}`} class="h-[18px] w-[18px]" />
+                    {social.label}
+                  </a>
+                </li>
+              ))
+          }
+        </ul>
+
+        <ul class="mt-6 flex flex-wrap gap-x-6 gap-y-2">
+          {
+            nav.map((link) => (
+              <li>
+                <a href={link.href} class="text-[14px] text-on-accent/60 transition-colors hover:text-on-accent">
+                  {link.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+    </div>
+
+    <Badge
+      class="absolute right-0 bottom-0 text-on-accent"
+      sizeClass="h-32 w-32 md:h-64 md:w-64"
+      text="HAVE A PROJECT? ✦ LET'S BUILD IT ✦"
+    />
+
+    <div class="mt-14 flex flex-col gap-2 border-t border-on-accent/20 pt-6 text-[13px] text-on-accent/70 sm:flex-row sm:justify-between md:pr-72">
+      <p>© {new Date().getFullYear()} {site.name}</p>
+      <p>{site.location}</p>
+    </div>
+  </div>
+</footer>

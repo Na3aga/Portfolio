@@ -1,0 +1,57 @@
+---
+import { Icon } from "astro-icon/components";
+import Section from "./Section.astro";
+import { stack, chains } from "~/data/site";
+import { techByName } from "~/data/tech";
+
+const layers = [
+  ...stack.map((group) => ({ name: group.group, note: group.note, items: group.items })),
+  {
+    name: "Chains",
+    note: "Shipped to production, EVM and non-EVM",
+    items: [...chains.evm, ...chains.nonEvm],
+  },
+];
+---
+
+<Section id="stack" index="03" label="Stack" title="The stack I run in production">
+  <ul class="grid gap-4 lg:grid-cols-2">
+    {
+      layers.map((layer, i) => (
+        <li
+          class="fill-row group overflow-hidden rounded-2xl border border-line bg-surface p-7 md:p-9"
+          data-reveal="scale"
+          data-reveal-delay={i * 60}
+        >
+          <div class="flex items-start justify-between gap-6">
+            <div>
+              <h3 class="text-2xl font-bold md:text-[32px]">{layer.name}</h3>
+              <p class="mt-2 max-w-sm text-[15px] leading-relaxed text-muted transition-colors group-hover:text-on-accent/70">
+                {layer.note}
+              </p>
+            </div>
+            <span class="display shrink-0 text-5xl text-line transition-colors group-hover:text-on-accent/30 md:text-6xl">
+              {String(i + 1).padStart(2, "0")}
+            </span>
+          </div>
+
+          <ul class="mt-7 flex flex-wrap gap-2">
+            {
+              layer.items.map((tech) => {
+                const entry = techByName(tech.name);
+                return (
+                  <li class="inline-flex items-center gap-2 rounded-full border border-line bg-raised px-3.5 py-1.5 text-[13px] font-medium text-ink transition-colors group-hover:border-on-accent/25 group-hover:bg-on-accent/10 group-hover:text-on-accent">
+                    {entry.icon && (
+                      <Icon name={`simple-icons:${entry.icon}`} class="h-3.5 w-3.5 shrink-0" />
+                    )}
+                    {tech.name}
+                  </li>
+                );
+              })
+            }
+          </ul>
+        </li>
+      ))
+    }
+  </ul>
+</Section>

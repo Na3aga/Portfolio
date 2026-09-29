@@ -1,0 +1,94 @@
+---
+import { existsSync } from "node:fs";
+
+interface Props {
+  /** Text that runs around the ring — laid out once, evenly, around the circle */
+  text?: string;
+  /** Ring diameter in px. Ignored when `sizeClass` is set. */
+  size?: number;
+  /** Responsive size utilities, e.g. "h-32 w-32 md:h-64 md:w-64" */
+  sizeClass?: string;
+  /** Callers must supply a position utility (`relative` or `absolute …`). */
+  class?: string;
+}
+
+const {
+  text = "WEB3 FULLSTACK ENGINEER ✦ SOLANA & EVM ✦",
+  size = 240,
+  sizeClass = "",
+  class: className = "",
+} = Astro.props;
+
+// Shows the portrait once public/photo.jpg exists; initials until then.
+const photo = ["photo.jpg", "photo.png", "photo.webp"].find((f) => existsSync(`public/${f}`));
+const id = `badge-${Math.random().toString(36).slice(2, 8)}`;
+
+// The text is laid out to exactly the circle's circumference, so it wraps once
+// with even spacing and the end can never run into the start.
+const radius = 76;
+const circumference = +(2 * Math.PI * radius).toFixed(1);
+---
+
+<div
+  class={`badge shrink-0 ${sizeClass} ${className}`}
+  style={sizeClass ? undefined : `width:${size}px;height:${size}px`}
+>
+  <!-- Outer ring. Drawn so the stroke's OUTER edge lands exactly on r=100, i.e.
+       on the panel's corner arc when the badge's diameter equals 2× the corner
+       radius — the ring then continues the panel's edge instead of floating
+       inside it. Stroked in the page colour so it reads as a cut through the
+       panel, the same trick the oversized name uses. -->
+  <svg viewBox="0 0 200 200" class="absolute inset-0 h-full w-full" aria-hidden="true">
+    <circle
+      cx="100"
+      cy="100"
+      r="99.25"
+      fill="none"
+      stroke="var(--color-bg)"
+      stroke-width="1.5"
+    ></circle>
+  </svg>
+
+  <svg viewBox="0 0 200 200" class="badge-ring absolute inset-0 h-full w-full" aria-hidden="true">
+    <defs>
+      <path
+        id={id}
+        d={`M100,100 m-${radius},0 a${radius},${radius} 0 1,1 ${radius * 2},0 a${radius},${radius} 0 1,1 -${radius * 2},0`}
+      ></path>
+    </defs>
+    <text class="fill-current text-[15px] font-bold">
+      <textPath href={`#${id}`} startOffset="0" textLength={circumference} lengthAdjust="spacing">
+        {text}
+      </textPath>
+    </text>
+  </svg>
+
+  <div class="absolute inset-[22%] overflow-hidden rounded-full border border-current/20 bg-current/10">
+    {
+      photo ? (
+        <img
+          src={`/${photo}`}
+          alt="Nazar Havryliuk"
+          class="h-full w-full object-cover"
+          loading="lazy"
+          decoding="async"
+        />
+      ) : (
+        <span class="flex h-full w-full items-center justify-center text-3xl font-black tracking-tight">
+          NH
+        </span>
+      )
+    }
+  </div>
+</div>
+
+<style>
+  .badge-ring {
+    animation: badge-spin 26s linear infinite;
+  }
+  @keyframes badge-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+</style>

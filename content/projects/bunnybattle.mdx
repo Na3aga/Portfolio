@@ -1,0 +1,45 @@
+---
+title: "BunnyBattle Solana"
+summary: "Zero-knowledge board game with SOL betting. Anchor program in Rust with Groth16 proof verification, a native prover path at ~10ms per proof, and clients for web and Solana Seeker."
+year: "2025"
+role: "Solo — contracts, circuits, indexer, clients"
+stack: ["Rust", "Anchor", "Solana", "Circom", "Groth16", "TypeScript", "React", "PostgreSQL"]
+repo: "https://github.com/Na3aga"
+highlights:
+  - "Anchor program with Groth16 verification and PDA escrow, 17 of 17 tests passing"
+  - "Circom circuits with a native prover (rapidsnark via Bun FFI) at about 10 ms per proof"
+  - "Rust indexer (Carbon, axum, Postgres, Redis) at p50 2.2 s chain-to-DB"
+  - "Web client with in-browser proving, plus a React Native client for Solana Seeker"
+node: 6
+featured: true
+order: 1
+draft: false
+---
+
+An open-source zero-knowledge board game on Solana with real SOL betting. Built
+end to end: the on-chain program, the circuits, the prover, the indexer and two
+clients.
+
+## On-chain program
+
+Anchor program in Rust handling Groth16 proof verification, per-game treasury
+escrow on PDAs, timeout mechanics, protocol fees and admin controls.
+
+**17 of 17 tests pass**, including tampered-proof rejection and cross-player
+proof-reuse rejection.
+
+## Circuits and proving
+
+Circom circuits with a native prover path: **rapidsnark via Bun FFI at about
+10ms per proof**, with a snarkjs fallback for environments where the native
+path isn't available.
+
+## Indexer
+
+Rust indexer built on the Carbon crawler with an axum API, Postgres and Redis.
+Measured chain-to-DB latency: **p50 2.2s, p95 2.9s**.
+
+## Clients
+
+A Vite and React web client with in-browser proving, plus a React Native client
+targeting Solana Seeker. Deployed on Railway with CI/CD.
