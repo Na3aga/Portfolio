@@ -1,0 +1,24 @@
+---
+interface Props {
+  text: string;
+  class?: string;
+  /** Seconds between each word */
+  stagger?: number;
+}
+
+const { text, class: className = "", stagger = 0.05 } = Astro.props;
+const words = text.split(" ");
+---
+
+<span class={className} data-reveal>
+  {
+    words.map((word, i) => (
+      <>
+        <span class="split-word" style={`transition-delay:${(i * stagger).toFixed(2)}s`}>
+          {word}
+        </span>
+        {i < words.length - 1 && " "}
+      </>
+    ))
+  }
+</span>

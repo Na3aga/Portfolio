@@ -1,0 +1,111 @@
+---
+import Section from "./Section.astro";
+import CopyEmail from "./CopyEmail.astro";
+import { education, stats } from "~/data/site";
+
+// Kong's accordion: accent header rows that open a dark body.
+const panels = [
+  {
+    title: "How I work",
+    body: "I take products from architecture to production: Solana programs in Rust and Anchor, EVM contracts in Solidity, then the indexers, backends and CI that keep them running. I'd rather delete a service than add one.",
+  },
+  {
+    title: "Audits and security",
+    body: "My code has passed six or more external audits, including Pashov Audit Group and Zokkio, with no re-audit required. I also handle remediation: diagnosing bugs on live systems securing millions and shipping the fixes.",
+  },
+  {
+    title: "Leading delivery",
+    body: "As Smart Contract Competence Lead at Boosty Labs I own architecture decisions, supervise audits and mentor backend, DevOps and frontend teams, plus technical scoping for prospective clients.",
+  },
+];
+---
+
+<Section id="about" index="01" label="About" title="About me">
+  <div class="grid gap-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-20">
+    <div data-reveal>
+      <p class="text-lead leading-[1.4] text-ink">
+        I'm Nazar — a backend and fullstack Web3 engineer with six years of experience,
+        five of them in blockchain, working across Solana and EVM chains.
+      </p>
+
+      <dl class="mt-12 grid grid-cols-2 gap-8">
+        {
+          stats.map((stat) => (
+            <div>
+              <dt class="display text-5xl text-accent md:text-6xl">{stat.value}</dt>
+              <dd class="mt-2 text-[15px] leading-relaxed text-muted">
+                <span class="text-ink">{stat.unit}</span> — {stat.label}
+              </dd>
+            </div>
+          ))
+        }
+      </dl>
+
+      <div class="mt-12 border-t border-line pt-6">
+        <p class="eyebrow mb-3">Education</p>
+        {
+          education.map((item) => (
+            <p class="text-[15px] text-ink">
+              {item.degree}
+              <span class="block text-muted">
+                {item.school} · {item.period}
+              </span>
+            </p>
+          ))
+        }
+      </div>
+
+      <div class="mt-8">
+        <CopyEmail class="text-[15px] font-medium text-accent hover:underline" size={16} />
+      </div>
+    </div>
+
+    <ul class="space-y-4">
+      {
+        panels.map((panel, i) => (
+          <li class="accordion overflow-hidden rounded-2xl border border-line" data-reveal data-reveal-delay={i * 80}>
+            <button
+              type="button"
+              class="acc-head flex w-full items-center justify-between gap-6 bg-accent px-7 py-6 text-left text-2xl font-bold text-on-accent md:text-[32px]"
+              aria-expanded={i === 0 ? "true" : "false"}
+            >
+              {panel.title}
+              <span aria-hidden="true" class="acc-sign text-2xl leading-none transition-transform duration-300">
+                +
+              </span>
+            </button>
+            <div class="acc-body grid bg-surface">
+              <div class="overflow-hidden">
+                <p class="px-7 py-6 text-[18px] leading-[1.5] font-light text-muted">{panel.body}</p>
+              </div>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</Section>
+
+<style>
+  .acc-body {
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.45s var(--ease-out-expo);
+  }
+  .accordion.is-open .acc-body {
+    grid-template-rows: 1fr;
+  }
+  .accordion.is-open .acc-sign {
+    transform: rotate(45deg);
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>(".accordion").forEach((item, i) => {
+    const head = item.querySelector<HTMLButtonElement>(".acc-head");
+    if (i === 0) item.classList.add("is-open");
+    head?.addEventListener("click", () => {
+      const open = item.classList.toggle("is-open");
+      head.setAttribute("aria-expanded", String(open));
+    });
+  });
+</script>

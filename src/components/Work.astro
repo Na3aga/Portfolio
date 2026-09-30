@@ -1,0 +1,116 @@
+---
+import Section from "./Section.astro";
+import { work } from "~/data/site";
+
+const keyOf = (name: string) => name.toLowerCase().replace(/[^a-z0-9]/g, "");
+---
+
+<Section id="experience" index="04" label="Experience" title="Where I've done it">
+  <div class="grid gap-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:gap-16" data-exp>
+    <!-- Role list: the picked row fills with the accent colour -->
+    <ul class="overflow-hidden rounded-2xl border border-line" data-reveal>
+      {
+        work.map((role, i) => (
+          <li class={i ? "border-t border-line" : ""}>
+            <button
+              type="button"
+              class="exp-row flex w-full items-center justify-between gap-5 px-5 py-5 text-left transition-colors md:px-7"
+              data-exp-row={keyOf(role.company)}
+              aria-expanded={i === 0 ? "true" : "false"}
+            >
+              <span class="min-w-0">
+                <span class="block truncate text-base font-semibold md:text-lg">{role.title}</span>
+                <span class="exp-company mt-0.5 block text-[13px] text-muted">{role.company}</span>
+              </span>
+              <span class="exp-period shrink-0 text-[13px] text-muted">{role.period}</span>
+            </button>
+          </li>
+        ))
+      }
+    </ul>
+
+    <!-- Details for the picked role -->
+    <div data-reveal data-reveal-delay="100">
+      {
+        work.map((role, i) => (
+          <article
+            class={`exp-detail ${i === 0 ? "" : "hidden"}`}
+            data-exp-detail={keyOf(role.company)}
+          >
+            <div class="flex items-center gap-4">
+              {role.logo && (
+                <img
+                  src={role.logo}
+                  alt={`${role.company} logo`}
+                  class="h-6 w-auto max-w-[8rem] object-contain object-left"
+                  loading="lazy"
+                  decoding="async"
+                />
+              )}
+              <span class="text-[13px] text-muted">{role.period}</span>
+            </div>
+
+            <p class="mt-5 leading-relaxed text-ink">{role.summary}</p>
+
+            {role.highlights.length > 0 && (
+              <ul class="mt-6 space-y-3">
+                {role.highlights.map((item) => (
+                  <li class="border-l-2 border-accent pl-4">
+                    <p class="text-[15px] font-semibold">{item.name}</p>
+                    <p class="mt-1 text-[14px] leading-relaxed text-muted">{item.detail}</p>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            <p class="mt-6 flex flex-wrap gap-2">
+              {role.tech.map((tech) => (
+                <span class="rounded-full border border-line bg-raised px-3 py-1 text-[12px] text-muted">
+                  {tech.name}
+                </span>
+              ))}
+            </p>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</Section>
+
+<style>
+  .exp-row.is-active {
+    background-color: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+  .exp-row.is-active .exp-company,
+  .exp-row.is-active .exp-period {
+    color: color-mix(in srgb, var(--color-on-accent) 70%, transparent);
+  }
+  .exp-row:not(.is-active):hover {
+    background-color: var(--color-surface);
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>("[data-exp]");
+  const rows = [...(root?.querySelectorAll<HTMLElement>("[data-exp-row]") ?? [])];
+  const details = [...(root?.querySelectorAll<HTMLElement>("[data-exp-detail]") ?? [])];
+
+  const select = (key: string) => {
+    for (const row of rows) {
+      const on = row.dataset.expRow === key;
+      row.classList.toggle("is-active", on);
+      row.setAttribute("aria-expanded", String(on));
+    }
+    for (const detail of details) {
+      detail.classList.toggle("hidden", detail.dataset.expDetail !== key);
+    }
+  };
+
+  for (const row of rows) {
+    row.addEventListener("mouseenter", () => select(row.dataset.expRow ?? ""));
+    row.addEventListener("focus", () => select(row.dataset.expRow ?? ""));
+    row.addEventListener("click", () => select(row.dataset.expRow ?? "")); // touch
+  }
+  if (rows[0]) select(rows[0].dataset.expRow ?? "");
+</script>

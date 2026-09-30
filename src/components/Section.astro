@@ -1,0 +1,27 @@
+---
+import SplitText from "./SplitText.astro";
+
+interface Props {
+  id?: string;
+  /** Section number, e.g. "02" */
+  index?: string;
+  /** Eyebrow label, e.g. "About" */
+  label: string;
+  /** Large accent heading */
+  title?: string;
+  class?: string;
+}
+const { id, index, label, title, class: className = "" } = Astro.props;
+---
+
+<section id={id} class={`px-6 py-24 md:px-10 md:py-32 ${className}`}>
+  <div class="mx-auto w-full max-w-[1400px]">
+    <p class="eyebrow mb-6" data-reveal>{index ? `${index} / ${label}` : label}</p>
+    {title && (
+      <h2 class="heading mb-14 text-display">
+        <SplitText text={title} />
+      </h2>
+    )}
+    <slot />
+  </div>
+</section>
