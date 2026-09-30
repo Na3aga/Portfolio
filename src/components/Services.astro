@@ -1,0 +1,60 @@
+---
+import Section from "./Section.astro";
+import { site } from "~/data/site";
+
+const services = [
+  {
+    title: "Smart contract development",
+    detail: "Solana programs in Rust and Anchor; EVM contracts in Solidity, tested with Hardhat and Foundry.",
+  },
+  {
+    title: "Protocol architecture & audits",
+    detail: "Architecture reviews, audit supervision and remediation — six or more audits passed with no re-audit.",
+  },
+  {
+    title: "Indexers & backends",
+    detail: "On-chain indexing services, NestJS and Rust backends, keepers, monitoring and CI/CD.",
+  },
+  {
+    title: "Fullstack dApps",
+    detail: "React frontends with Solana and EVM wallet integrations, shipped to production.",
+  },
+  {
+    title: "Cross-chain integration",
+    detail: "Bridges and settlement flows across EVM, Solana, TON, Stellar, Tron and Concordium.",
+  },
+];
+---
+
+<Section id="services" index="02" label="Services" title="What I do">
+  <div class="mb-10 flex flex-wrap items-center justify-between gap-4" data-reveal>
+    <p class="max-w-2xl text-xl leading-relaxed text-muted md:text-2xl">
+      Available for contract and full-time Web3 engineering work, remote from Ukraine.
+    </p>
+    <a href={`mailto:${site.email}`} class="btn-ghost">Hire me</a>
+  </div>
+
+  <ul>
+    {
+      services.map((service, i) => (
+        <li
+          class="fill-row group flex items-center justify-between gap-6 rounded-2xl border-t border-line px-5 py-7 last:border-b md:px-8 md:py-10"
+          data-reveal
+          data-reveal-delay={i * 60}
+        >
+          <div class="flex-1">
+            <h3 class="text-2xl font-bold md:text-[32px]">
+              {service.title}
+            </h3>
+            <p class="mt-2 max-w-2xl text-[17px] leading-relaxed text-muted transition-colors group-hover:text-on-accent/75">
+              {service.detail}
+            </p>
+          </div>
+          <span class="display shrink-0 text-5xl text-line transition-colors group-hover:text-on-accent/30 md:text-7xl">
+            {String(i + 1).padStart(2, "0")}
+          </span>
+        </li>
+      ))
+    }
+  </ul>
+</Section>

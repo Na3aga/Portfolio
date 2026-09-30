@@ -1,0 +1,42 @@
+---
+const items = [
+  "SOLANA", "RUST", "ANCHOR", "SOLIDITY", "EVM", "TYPESCRIPT", "NESTJS", "THE GRAPH",
+  "FOUNDRY", "HARDHAT", "GO", "POSTGRESQL", "REACT", "AWS", "DOCKER", "ZK",
+];
+const loop = [...items, ...items];
+---
+
+<div
+  class="overflow-hidden border-y border-line bg-surface/40 py-4"
+  role="img"
+  aria-label={`Technologies: ${items.join(", ")}`}
+>
+  <ul class="flex w-max items-center gap-8" data-marquee aria-hidden="true">
+    {
+      loop.map((item) => (
+        <li class="flex shrink-0 items-center gap-8 text-[13px] font-semibold tracking-[0.18em] text-muted">
+          {item}
+          <span class="text-accent">/</span>
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<style>
+  [data-marquee] {
+    animation: marquee 42s linear infinite;
+  }
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    [data-marquee] {
+      animation: none;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+  }
+</style>

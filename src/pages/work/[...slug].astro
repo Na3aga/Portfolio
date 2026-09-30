@@ -1,0 +1,81 @@
+---
+import type { GetStaticPaths } from "astro";
+import { getCollection, render } from "astro:content";
+import Base from "~/layouts/Base.astro";
+import Footer from "~/components/Footer.astro";
+
+export const getStaticPaths = (async () => {
+  const projects = await getCollection("projects", ({ data }) => !data.draft);
+  return projects.map((project) => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+}) satisfies GetStaticPaths;
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+---
+
+<Base title={`${project.data.title} — Nazar Havryliuk`} description={project.data.summary}>
+  <article class="px-6 pt-20 pb-10 md:px-10 md:pt-28">
+    <div class="mx-auto w-full max-w-[1100px]">
+      <a href="/#work" class="eyebrow transition-colors hover:text-accent">← Back to work</a>
+
+      <h1 class="display mt-8 text-display text-ink">{project.data.title}</h1>
+
+      <dl class="mt-10 grid gap-6 border-y border-line py-6 text-[14px] sm:grid-cols-3">
+        <div>
+          <dt class="eyebrow">Year</dt>
+          <dd class="mt-2 text-ink">{project.data.year}</dd>
+        </div>
+        <div>
+          <dt class="eyebrow">Role</dt>
+          <dd class="mt-2 text-ink">{project.data.role}</dd>
+        </div>
+        <div>
+          <dt class="eyebrow">Stack</dt>
+          <dd class="mt-2 flex flex-wrap gap-2">
+            {project.data.stack.map((tech) => (
+              <span class="rounded-full border border-line px-3 py-1 text-[12px] text-muted">{tech}</span>
+            ))}
+          </dd>
+        </div>
+      </dl>
+
+      {
+        project.data.cover && (
+          <img src={project.data.cover} alt="" class="mt-12 w-full rounded-2xl border border-line" />
+        )
+      }
+
+      <div class="mt-14 grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
+        <p class="text-xl leading-snug text-ink md:text-2xl">{project.data.summary}</p>
+
+        <div
+          class="space-y-5 leading-relaxed text-muted [&_a]:text-accent [&_a]:underline [&_a]:underline-offset-4 [&_strong]:font-semibold [&_strong]:text-ink [&>h2]:mt-12 [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-ink [&>h2]:first:mt-0 [&>ul]:space-y-3 [&>ul>li]:border-l-2 [&>ul>li]:border-accent [&>ul>li]:pl-4"
+        >
+          <Content />
+        </div>
+      </div>
+
+      <div class="mt-14 flex flex-wrap gap-3">
+        {
+          project.data.repo && (
+            <a href={project.data.repo} target="_blank" rel="noreferrer" class="btn-ghost">
+              Source ↗
+            </a>
+          )
+        }
+        {
+          project.data.demo && (
+            <a href={project.data.demo} target="_blank" rel="noreferrer" class="btn">
+              Live site ↗
+            </a>
+          )
+        }
+      </div>
+    </div>
+  </article>
+
+  <Footer slot="footer" />
+</Base>

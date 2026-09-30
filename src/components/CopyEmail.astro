@@ -1,0 +1,79 @@
+---
+import { site } from "~/data/site";
+
+interface Props {
+  /** Classes for the mailto link itself */
+  class?: string;
+  /** Icon size in px */
+  size?: number;
+}
+
+const { class: linkClass = "", size = 20 } = Astro.props;
+---
+
+<!-- Clicking the address opens the mail app; the icon copies it instead. -->
+<span class="copy-email inline-flex items-center gap-3" data-copy-email>
+  <a href={`mailto:${site.email}`} class={linkClass}>{site.email}</a>
+  <button
+    type="button"
+    class="copy-btn inline-flex shrink-0 items-center justify-center rounded-full border border-dim p-2 text-muted transition-colors hover:border-purple hover:text-cream"
+    aria-label="Copy email address"
+    title="Copy email"
+    data-copy-value={site.email}
+  >
+    <!-- copy -->
+    <svg class="icon-copy" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <rect x="9" y="9" width="12" height="12" rx="2"></rect>
+      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+    </svg>
+    <!-- check -->
+    <svg class="icon-check hidden" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M20 6 9 17l-5-5"></path>
+    </svg>
+  </button>
+  <span class="copy-status sr-only" aria-live="polite"></span>
+</span>
+
+<style>
+  .copy-email.is-copied .copy-btn {
+    border-color: var(--color-purple);
+    color: var(--color-purple);
+  }
+</style>
+
+<script>
+  // HTTPS (and localhost) guarantee the async clipboard API; if it ever
+  // fails, the mailto link next to the icon still works.
+  const copy = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  document.querySelectorAll<HTMLElement>("[data-copy-email]").forEach((root) => {
+    const button = root.querySelector<HTMLButtonElement>(".copy-btn");
+    const status = root.querySelector<HTMLElement>(".copy-status");
+    const iconCopy = root.querySelector(".icon-copy");
+    const iconCheck = root.querySelector(".icon-check");
+    let timer = 0;
+
+    button?.addEventListener("click", async () => {
+      const ok = await copy(button.dataset.copyValue ?? "");
+      if (!ok) return;
+      root.classList.add("is-copied");
+      iconCopy?.classList.add("hidden");
+      iconCheck?.classList.remove("hidden");
+      if (status) status.textContent = "Email copied";
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        root.classList.remove("is-copied");
+        iconCopy?.classList.remove("hidden");
+        iconCheck?.classList.add("hidden");
+        if (status) status.textContent = "";
+      }, 1800);
+    });
+  });
+</script>

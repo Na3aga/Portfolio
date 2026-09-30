@@ -1,0 +1,166 @@
+---
+import { site } from "~/data/site";
+import Badge from "./Badge.astro";
+
+const links = [
+  { label: "About", href: "#about" },
+  { label: "Services", href: "#services" },
+  { label: "Stack", href: "#stack" },
+  { label: "Work", href: "#work" },
+  { label: "Contact", href: "#contact" },
+];
+---
+
+<section class="sticky top-0 z-0 px-4 pt-4 md:px-12 md:pt-12">
+  <div
+    class="panel @container relative flex min-h-[68svh] flex-col overflow-hidden rounded-none rounded-tl-[4rem] md:min-h-[80svh] md:rounded-tl-[8rem]"
+  >
+    <!-- Top row: badge nested in the rounded corner, then the nav -->
+    <div class="relative flex items-start justify-between gap-6 p-0">
+      <Badge class="relative text-on-accent" sizeClass="h-32 w-32 md:h-64 md:w-64" />
+
+      <nav aria-label="Primary" class="hidden items-center gap-8 p-8 md:flex md:p-10">
+        {
+          links.map((link) => (
+            <a
+              href={link.href}
+              class="text-[15px] font-medium text-on-accent/80 transition-colors hover:text-on-accent"
+            >
+              {link.label}
+            </a>
+          ))
+        }
+        <a href={site.cv} class="rounded-full bg-on-accent px-5 py-2.5 text-[15px] font-semibold text-accent">
+          Download CV
+        </a>
+      </nav>
+
+      <a
+        href={site.cv}
+        class="m-5 rounded-full bg-on-accent px-4 py-2 text-[13px] font-semibold text-accent md:hidden"
+      >
+        CV
+      </a>
+    </div>
+
+    <!-- Copy and CTAs. The bottom padding reserves room for the pinned name. -->
+    <div class="relative mt-auto max-w-2xl px-6 pb-[15cqw] md:px-10 md:pb-[11cqw]">
+      <p class="text-[17px] leading-relaxed text-on-accent/80 md:text-[19px]">
+        {site.role} — Solana &amp; EVM. Six years building smart contracts, indexers and
+        the interfaces on top of them.
+      </p>
+
+      <div class="mt-7 flex flex-wrap items-center gap-3">
+        <a
+          href="#work"
+          class="rounded-full bg-on-accent px-6 py-3 text-[15px] font-semibold text-accent transition-transform hover:-translate-y-0.5"
+        >
+          See the work
+        </a>
+        <a
+          href="#contact"
+          class="rounded-full border border-on-accent/30 px-6 py-3 text-[15px] font-semibold text-on-accent transition-colors hover:border-on-accent"
+        >
+          Get in touch
+        </a>
+      </div>
+
+      <!-- Mobile nav: the desktop links live in the panel header -->
+      <ul class="-mx-6 mt-8 flex gap-5 overflow-x-auto px-6 pb-1 md:hidden">
+        {
+          links.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                class="text-[14px] font-medium whitespace-nowrap text-on-accent/70 transition-colors hover:text-on-accent"
+              >
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <!-- Oversized name, pinned to the bottom edge. The cqw size is the no-JS
+         fallback; the script below measures the real glyph ink and sizes the
+         name so it spans the panel exactly, with no gap at either side. -->
+    <h1
+      class="display absolute bottom-0 left-0 translate-y-[0.06em] text-[12.6cqw] leading-[0.76] whitespace-nowrap text-bg"
+      data-fit-name
+    >
+      <span class="sr-only">{site.name}</span>
+      <span
+        aria-hidden="true"
+        class="block origin-bottom"
+        data-scroll-scale="sticky"
+        data-scale-from="1"
+        data-scale-to="1.4"
+      >
+        Nazar Havryliuk
+      </span>
+    </h1>
+  </div>
+</section>
+
+<script>
+  const NAME_CUT = 0.055; // how much of the letter bottoms the panel trims, in em
+
+  const fit = () => {
+    const h1 = document.querySelector<HTMLElement>("[data-fit-name]");
+    const panel = h1?.closest<HTMLElement>(".panel");
+    const span = h1?.querySelector<HTMLElement>("span[aria-hidden]");
+    if (!h1 || !panel || !span) return;
+
+    const text = span.textContent ?? "";
+    const panelRect = panel.getBoundingClientRect();
+    const style = getComputedStyle(h1);
+    const ctx = document.createElement("canvas").getContext("2d");
+    if (!ctx || !text) return;
+
+    // Side bearings (the font's built-in blank space either side of a word),
+    // measured once at a probe size. Canvas ignores CSS letter-spacing, so it is
+    // only used for the bearings — the width itself is measured from the real
+    // rendered text below, which does include letter-spacing.
+    const probe = 100;
+    ctx.font = `${style.fontWeight} ${probe}px ${style.fontFamily}`;
+    const m = ctx.measureText(text);
+    const leftBearing = -m.actualBoundingBoxLeft / probe; // in em
+    const rightBearing = (m.width - m.actualBoundingBoxRight) / probe;
+
+    const range = document.createRange();
+    // Measure with the scroll scaling neutralised, or the fit would compound.
+    const boxOf = () => {
+      const scale = span.style.getPropertyValue("--scroll-scale");
+      span.style.setProperty("--scroll-scale", "1");
+      range.selectNodeContents(span);
+      const rect = range.getBoundingClientRect();
+      if (scale) span.style.setProperty("--scroll-scale", scale);
+      else span.style.removeProperty("--scroll-scale");
+      return rect;
+    };
+
+    // Converge on the size where the visible ink spans the panel exactly.
+    h1.style.marginLeft = "0px";
+    for (let i = 0; i < 4; i += 1) {
+      const size = parseFloat(getComputedStyle(h1).fontSize);
+      const ink = boxOf().width - (leftBearing + rightBearing) * size;
+      if (ink <= 0) return;
+      h1.style.fontSize = `${size * (panelRect.width / ink)}px`;
+    }
+
+    // Pull the leftmost ink onto the panel's left edge.
+    const size = parseFloat(getComputedStyle(h1).fontSize);
+    h1.style.marginLeft = `${-(boxOf().left - panelRect.left) - leftBearing * size}px`;
+    h1.style.transform = `translateY(${NAME_CUT}em)`;
+  };
+
+  const run = () => {
+    fit();
+    // Re-measure once the webfont is in: fallback metrics differ.
+    document.fonts?.ready.then(fit);
+  };
+
+  run();
+  window.addEventListener("resize", fit);
+</script>

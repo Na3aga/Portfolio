@@ -1,0 +1,142 @@
+---
+import { site } from "~/data/site";
+import "~/styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Path to an OG image under /public */
+  image?: string;
+}
+
+const {
+  title = `${site.name} — ${site.role}`,
+  description = site.description,
+  image = "/og.png",
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL(image, Astro.site);
+---
+
+<!doctype html>
+<html lang="en" class="scheme-dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#17151f" />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+  </head>
+
+  <body class="antialiased">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded-full focus:bg-accent focus:px-5 focus:py-2 focus:text-sm focus:text-on-accent"
+    >
+      Skip to content
+    </a>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <slot name="footer" />
+
+    <script>
+      // Reveal-on-scroll. Adds .is-visible once; no library, no layout thrash.
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const targets = document.querySelectorAll<HTMLElement>("[data-reveal]");
+
+      if (reduced || !("IntersectionObserver" in window)) {
+        targets.forEach((el) => el.classList.add("is-visible"));
+      } else {
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (!entry.isIntersecting) continue;
+              const el = entry.target as HTMLElement;
+              const delay = Number(el.dataset.revealDelay ?? 0);
+              window.setTimeout(() => el.classList.add("is-visible"), delay);
+              io.unobserve(el);
+            }
+          },
+          { rootMargin: "0px 0px -10% 0px", threshold: 0.1 },
+        );
+        targets.forEach((el) => io.observe(el));
+      }
+
+      // Scroll-linked scaling for the two oversized panel headings.
+      //   sticky — grows as the page scrolls past the pinned hero
+      //   enter  — starts oversized and settles as it scrolls into view
+      const scalers = [...document.querySelectorAll<HTMLElement>("[data-scroll-scale]")];
+      const shifters = [...document.querySelectorAll<HTMLElement>("[data-scroll-shift]")];
+
+      if (!reduced && (scalers.length || shifters.length)) {
+        const clamp = (n: number) => Math.min(1, Math.max(0, n));
+
+        const paint = () => {
+          const vh = window.innerHeight;
+
+          for (const el of scalers) {
+            const from = Number(el.dataset.scaleFrom ?? 1);
+            const to = Number(el.dataset.scaleTo ?? 1);
+            let progress = 0;
+
+            if (el.dataset.scrollScale === "sticky") {
+              // The hero stays pinned, so measure against how far the page has
+              // scrolled rather than the element's own position.
+              const hero = el.closest("section");
+              const track = hero?.offsetHeight ?? vh;
+              progress = clamp(window.scrollY / track);
+            } else {
+              // Settles over ~0.6vh: the page bottom arrives before a longer
+              // distance would finish, leaving it stuck mid-scale.
+              const rect = el.getBoundingClientRect();
+              progress = clamp((vh - rect.top) / (vh * 0.6));
+            }
+
+            el.style.setProperty("--scroll-scale", String(from + (to - from) * progress));
+          }
+
+          // Parallax: starts lower and catches up, so the panel reads as rising
+          // faster than the page beneath the heading.
+          for (const el of shifters) {
+            const from = Number(el.dataset.shiftFrom ?? 0);
+            const to = Number(el.dataset.shiftTo ?? 0);
+            const rect = el.getBoundingClientRect();
+            const progress = clamp((vh - rect.top) / (vh * 0.75));
+            el.style.setProperty("--scroll-shift", `${from + (to - from) * progress}%`);
+          }
+        };
+
+        let queued = false;
+        const onScroll = () => {
+          if (queued) return;
+          queued = true;
+          requestAnimationFrame(() => {
+            queued = false;
+            paint();
+          });
+        };
+
+        paint();
+        window.addEventListener("scroll", onScroll, { passive: true });
+        window.addEventListener("resize", onScroll);
+      }
+    </script>
+  </body>
+</html>

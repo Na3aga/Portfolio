@@ -1,0 +1,261 @@
+@import "tailwindcss";
+
+/* Inter Tight — the Kong reference's typeface (SIL OFL, self-hosted) */
+@import "@fontsource-variable/inter-tight";
+
+@theme {
+  /* Kong's structure, in purple: the accent plays the role its green does,
+     light enough that near-black text sits on it comfortably. */
+  --color-bg: #17151f;
+  --color-surface: #201d2b;
+  --color-raised: #272335;
+  --color-line: #322d42;
+  --color-accent: #c79bff;
+  --color-accent-soft: #a978f0;
+  /* Text placed on an accent panel */
+  --color-on-accent: #16131e;
+  --color-ink: #ece8f6;
+  --color-muted: #9a93b0;
+
+  --font-sans: "Inter Tight Variable", "Inter Tight", ui-sans-serif, system-ui, sans-serif;
+
+  /* Oversized display type, as on the Kong hero and footer panels */
+  --text-mega: clamp(3.5rem, 13vw, 10rem);
+  --text-display: clamp(2.5rem, 6vw, 4.5rem);
+  --text-heading: clamp(2rem, 4vw, 3.25rem);
+  /* Large intro paragraphs — the reference runs these at 36px */
+  --text-lead: clamp(1.5rem, 2.6vw, 2.25rem);
+
+  /* The reference rounds a single corner, hard, at 96px */
+  --radius-panel: 6rem;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 17px;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+  }
+
+  /* Film grain. Drawn at 256px and tiled 1:1 — scaling a smaller tile up is
+     what made it look soft. `pixelated` keeps the speckle crisp on HiDPI. */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    pointer-events: none;
+    opacity: 0.12;
+    background-size: 256px 256px;
+    image-rendering: pixelated;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256' viewBox='0 0 256 256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  ::selection {
+    background-color: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* Heavy, tight display type — Kong's voice */
+  .display {
+    font-weight: 900;
+    line-height: 0.86;
+    letter-spacing: -0.035em;
+  }
+
+  .heading {
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--color-accent);
+  }
+
+  /* "04 / Selected work" section labels, from the Velázquez reference */
+  .eyebrow {
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  .panel {
+    border-radius: var(--radius-panel);
+    background-color: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    background-color: var(--color-accent);
+    color: var(--color-on-accent);
+    padding: 0.85rem 1.75rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    transition: filter 0.2s, transform 0.2s;
+  }
+  .btn:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+  }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    border: 1px solid var(--color-line);
+    color: var(--color-ink);
+    padding: 0.85rem 1.75rem;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-ghost:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  /* Outlined row used by the services and stack lists */
+  .row-card {
+    border: 1px solid var(--color-line);
+    border-radius: 1rem;
+    background-color: var(--color-surface);
+    transition: border-color 0.3s, background-color 0.3s;
+  }
+  .row-card:hover {
+    border-color: var(--color-accent);
+  }
+}
+
+/* Reveal-on-scroll, driven by IntersectionObserver in Base.astro.
+   Starts visible so content is never hidden if JS fails. */
+@media (prefers-reduced-motion: no-preference) {
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(1.5rem);
+    transition:
+      opacity 0.8s var(--ease-out-expo),
+      transform 0.8s var(--ease-out-expo);
+  }
+  [data-reveal].is-visible {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Motion. The reference animates almost everything in on scroll, so reveals
+   come in variants and headings stagger word by word.
+   --------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+  [data-reveal="left"] {
+    transform: translateX(-2rem);
+  }
+  [data-reveal="scale"] {
+    transform: scale(0.96) translateY(1.5rem);
+  }
+  [data-reveal].is-visible {
+    transform: none;
+  }
+
+  /* Headings split into words by SplitText */
+  .split-word {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(0.6em) rotate(2deg);
+    transition:
+      opacity 0.6s var(--ease-out-expo),
+      transform 0.7s var(--ease-out-expo);
+  }
+  .is-visible .split-word {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@layer components {
+  /* Rows that fill with the accent on hover — used by services and stack */
+  .fill-row {
+    position: relative;
+    isolation: isolate;
+    transition: color 0.35s var(--ease-out-expo);
+  }
+  .fill-row::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background-color: var(--color-accent);
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 0.45s var(--ease-out-expo);
+  }
+  .fill-row:hover::before,
+  .fill-row:focus-within::before {
+    transform: scaleY(1);
+  }
+  .fill-row:hover,
+  .fill-row:focus-within {
+    color: var(--color-on-accent);
+  }
+
+  .lift {
+    transition:
+      transform 0.5s var(--ease-out-expo),
+      border-color 0.35s;
+  }
+  .lift:hover {
+    transform: translateY(-6px);
+  }
+}
+
+/* Scroll-linked scaling for the two oversized panel headings. The size itself
+   is driven from JS via --scroll-scale; keeping it in a custom property means
+   the hero's fit script can still measure the text at its true size. */
+@media (prefers-reduced-motion: no-preference) {
+  [data-scroll-scale] {
+    transform: scale(var(--scroll-scale, 1));
+    will-change: transform;
+  }
+
+  /* Parallax: the element rides up faster than the page scroll. */
+  [data-scroll-shift] {
+    transform: translateY(var(--scroll-shift, 0%));
+    will-change: transform;
+  }
+}
