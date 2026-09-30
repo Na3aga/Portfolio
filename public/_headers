@@ -10,3 +10,11 @@
 
 /fonts/*
   Cache-Control: public, max-age=31536000, immutable
+
+# The CV is replaced occasionally, so it can't be immutable: serve it from the
+# edge instantly, revalidate in the background, and a new upload is live within
+# the hour. Content-Disposition keeps the in-browser preview while giving the
+# saved file a sensible name.
+/cv/*
+  Cache-Control: public, max-age=3600, stale-while-revalidate=604800
+  Content-Disposition: inline; filename="Nazar-Havryliuk-Web3-Engineer-CV.pdf"
